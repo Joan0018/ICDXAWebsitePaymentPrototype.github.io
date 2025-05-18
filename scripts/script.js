@@ -330,15 +330,15 @@ function handleSubmit(event) {
 
     // Additional validation for conditional fields
     const attendanceMode = document.getElementById('attendanceMode').value;
+    const organisation = document.getElementById('organisation').value;
+    const presenterType = document.getElementById('presenterType').value;
     
     if (attendanceMode === 'Physical') {
-        // Check physical attendance required fields
-        const presenterType = document.getElementById('presenterType').value;
-        const participantType = document.getElementById('participantType').value;
+        // Check dietary preference for all physical attendance
         const dietaryPreference = document.getElementById('dietaryPreference').value;
         
-        if (!presenterType || !dietaryPreference) {
-            alert('Please fill in all required fields for physical attendance.');
+        if (!dietaryPreference) {
+            alert('Please select your dietary preference.');
             return;
         }
 
@@ -348,20 +348,29 @@ function handleSubmit(event) {
             return;
         }
 
-        // If presenter, check paper information
-        if (presenterType === 'Presenter') {
-            const paperId = document.getElementById('paperId').value;
-            const paperTitle = document.getElementById('paperTitle').value;
-            const certificateName = document.getElementById('certificateName').value;
-
-            if(!participantType){
-                alert('Please fill in all required fields for physical attendance.');
+        // Only check presenter type and paper information if not TAR UMT non-presenter
+        if (!(organisation === 'Tunku Abdul Rahman University of Management and Technology (Malaysia)' && presenterType === 'Non-Presenter')) {
+            if (!presenterType) {
+                alert('Please select your presenter type.');
                 return;
             }
 
-            if (!paperId || !paperTitle || !certificateName) {
-                alert('Please fill in all paper information fields.');
-                return;
+            // If presenter, check paper information
+            if (presenterType === 'Presenter') {
+                const paperId = document.getElementById('paperId').value;
+                const paperTitle = document.getElementById('paperTitle').value;
+                const certificateName = document.getElementById('certificateName').value;
+                const participantType = document.getElementById('participantType').value;
+
+                if (!participantType) {
+                    alert('Please select your participant type.');
+                    return;
+                }
+
+                if (!paperId || !paperTitle || !certificateName) {
+                    alert('Please fill in all paper information fields.');
+                    return;
+                }
             }
         }
     }
