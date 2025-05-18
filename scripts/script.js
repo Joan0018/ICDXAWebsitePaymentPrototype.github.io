@@ -337,7 +337,7 @@ function handleSubmit(event) {
         const participantType = document.getElementById('participantType').value;
         const dietaryPreference = document.getElementById('dietaryPreference').value;
         
-        if (!presenterType || !participantType || !dietaryPreference) {
+        if (!presenterType || !dietaryPreference) {
             alert('Please fill in all required fields for physical attendance.');
             return;
         }
@@ -353,6 +353,11 @@ function handleSubmit(event) {
             const paperId = document.getElementById('paperId').value;
             const paperTitle = document.getElementById('paperTitle').value;
             const certificateName = document.getElementById('certificateName').value;
+
+            if(!participantType){
+                alert('Please fill in all required fields for physical attendance.');
+                return;
+            }
 
             if (!paperId || !paperTitle || !certificateName) {
                 alert('Please fill in all paper information fields.');
@@ -405,7 +410,7 @@ function handlePayment(event) {
         const participantType = document.getElementById('participantType').value;
         const dietaryPreference = document.getElementById('dietaryPreference').value;
         
-        if (!presenterType || !participantType || !dietaryPreference) {
+        if (!presenterType || !dietaryPreference) {
             alert('Please fill in all required fields for physical attendance.');
             return;
         }
@@ -421,6 +426,11 @@ function handlePayment(event) {
             const paperId = document.getElementById('paperId').value;
             const paperTitle = document.getElementById('paperTitle').value;
             const certificateName = document.getElementById('certificateName').value;
+
+            if(!participantType){
+                alert('Please fill in all required fields for physical attendance.');
+                return;
+            }
 
             if (!paperId || !paperTitle || !certificateName) {
                 alert('Please fill in all paper information fields.');
