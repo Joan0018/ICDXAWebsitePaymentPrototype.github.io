@@ -8,7 +8,7 @@ const PRICING = {
         },
         physical: {
             presenter: { rm: 300, usd: 70 },
-            nonPresenter: { rm: 300, usd: 70 }
+            nonPresenter: 0
         }
     },
     'BINUS University (Indonesia)': {
@@ -257,7 +257,7 @@ function calculatePrice() {
     const paymentBtn = document.getElementById('paymentBtn');
     
     // Hide pricing if no valid selections
-    if (attendanceMode === 'Online' || !organisation || !presenterType || (presenterType === 'Non-Presenter' && organisation === 'BINUS University (Indonesia)')) {
+    if (attendanceMode === 'Online' || !organisation || !presenterType || (presenterType === 'Non-Presenter' && organisation === 'BINUS University (Indonesia)' || (presenterType === 'Non-Presenter' && organisation === 'Tunku Abdul Rahman University of Management and Technology (Malaysia)'))) {
         pricingDiv.classList.add('hidden');
         registerBtn.classList.remove('hidden');
         paymentBtn.classList.add('hidden');
