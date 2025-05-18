@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Processing Payment - ICDXA 2025</title>
+    <link rel="icon" type="image/png" href="src/img/ICDXA2025_LOGO_WO_ICDXA.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="styles/styles.css" rel="stylesheet">
+    <script>
+        // Prevent back navigation
+        history.pushState(null, null, location.href);
+        window.onpopstate = function () {
+            history.go(1);
+            window.location.reload();
+        };
+    </script>
+</head>
+<body>
+    <header class="custom-header">
+        <div class="container d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center">
+                <img src="src/img/ICDXA2025_LOGO_WO_ICDXA.png" alt="ICDXA Logo" class="logo">
+                <h1 class="page-title ms-3">ICDXA 2025 Registration</h1>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="loading-container">
+            <div class="spinner-border text-primary spinner" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <div class="loading-text">Processing your payment...</div>
+            <div class="payment-method mt-3" id="paymentMethod"></div>
+            <div class="loading-subtext mt-2" id="loadingSubtext"></div>
+        </div>
+    </div>
+
+    <script>
+        // Get registration data from sessionStorage
+        const registrationData = JSON.parse(sessionStorage.getItem('registrationData') || '{}');
+        const country = registrationData.country || '';
+        console.log('Country from sessionStorage:', country); // Debug log
+        
+        const paymentMethod = document.getElementById('paymentMethod');
+        const loadingSubtext = document.getElementById('loadingSubtext');
+        
+        // Determine payment method based on country
+        if (country === 'Malaysia') {
+            console.log('Setting up FPX payment method'); // Debug log
+            paymentMethod.innerHTML = `
+                <div class="alert alert-info">
+                    <h5>Payment Method: FPX</h5>
+                    <p class="mb-0">You will be redirected to FPX payment gateway. No payment evidence upload required.</p>
+                </div>
+            `;
+            loadingSubtext.textContent = 'Please wait while we redirect you to FPX payment Gateway';
+            // Redirect to index.html after 3 seconds
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 3000);
+        } else {
+            console.log('Setting up Flywire payment method'); // Debug log
+            paymentMethod.innerHTML = `
+                <div class="alert alert-info">
+                    <h5>Payment Method: Flywire</h5>
+                    <p class="mb-0">You will be redirected to Flywire payment gateway. Please upload your payment evidence after completing the payment.</p>
+                </div>
+            `;
+            loadingSubtext.textContent = 'Please wait while we redirect you to Flywire Payment Gateway';
+            // Redirect to payment-evidence.html after 3 seconds
+            setTimeout(() => {
+                window.location.href = 'payment-evidence.html';
+            }, 3000);
+        }
+    </script>
+</body>
+</html> 

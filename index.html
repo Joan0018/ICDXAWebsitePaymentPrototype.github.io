@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ICDXA2025 Registration</title>
+    <link rel="icon" type="image/png" href="src/img/ICDXA2025_LOGO_WO_ICDXA.png">
+    <link rel="apple-touch-icon" href="src/img/ICDXA2025_LOGO_WO_ICDXA.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="styles/styles.css" rel="stylesheet">
+    <script>
+        // Clear form on page load
+        window.onload = function() {
+            // Clear form
+            const form = document.querySelector('form');
+            if (form) {
+                form.reset();
+                
+                // Reset all hidden fields
+                document.getElementById('otherCountryDiv').classList.add('hidden');
+                document.getElementById('otherOrgDiv').classList.add('hidden');
+                document.getElementById('physicalFields').classList.add('hidden');
+                document.getElementById('dietaryDiv').classList.add('hidden');
+                document.getElementById('otherDietaryDiv').classList.add('hidden');
+                document.getElementById('paperInfoDiv').classList.add('hidden');
+                document.getElementById('participantTypeDiv').classList.add('hidden');
+                document.getElementById('pricingDiv').classList.add('hidden');
+                
+                // Reset buttons
+                document.getElementById('registerBtn').classList.remove('hidden');
+                document.getElementById('paymentBtn').classList.add('hidden');
+                
+                // Clear sessionStorage
+                sessionStorage.clear();
+            }
+        };
+    </script>
+</head>
+
+<body>
+    <header class="custom-header">
+        <div class="container d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center">
+                <img src="src/img/ICDXA2025_LOGO_WO_ICDXA.png" alt="ICDXA Logo" class="logo">
+                <h1 class="page-title ms-3">ICDXA 2025 Registration</h1>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <form>
+            <!-- Email -->
+            <div class="mb-3">
+                <label for="email" class="form-label">Email address</label>
+                <input type="email" class="form-control" id="email" required>
+            </div>
+
+            <!-- Title -->
+            <div class="mb-3">
+                <label for="title" class="form-label">Title</label>
+                <select class="form-select" id="title" required>
+                    <option value="">Select Title</option>
+                    <option>Professor</option>
+                    <option>Associate Professor</option>
+                    <option>Dr.</option>
+                    <option>Ts.</option>
+                    <option>Mr.</option>
+                    <option>Ms.</option>
+                </select>
+            </div>
+
+            <!-- Full Name -->
+            <div class="mb-3">
+                <label for="fullName" class="form-label">Full Name</label>
+                <input type="text" class="form-control" id="fullName" required>
+            </div>
+
+            <!-- Identification Number -->
+            <div class="mb-3">
+                <label for="idNumber" class="form-label">Identification Number (e.g. I.C./Passport No.)</label>
+                <input type="text" class="form-control" id="idNumber" required>
+            </div>
+
+            <!-- Contact Number -->
+            <div class="mb-3">
+                <label for="contactNumber" class="form-label">Contact Number</label>
+                <input type="tel" class="form-control" id="contactNumber" required>
+            </div>
+
+            <!-- Country -->
+            <div class="mb-3">
+                <label for="country" class="form-label">Country</label>
+                <select class="form-select" id="country" required onchange="toggleOtherCountry()">
+                    <option value="">Select Country</option>
+                    <option value="Malaysia">Malaysia</option>
+                    <option value="Non-Malaysia">Non-Malaysia</option>
+                </select>
+            </div>
+
+            <!-- Please state (Only show if Non-Malaysia) -->
+            <div class="mb-3 hidden" id="otherCountryDiv">
+                <label for="otherCountry" class="form-label">Please state your country</label>
+                <input type="text" class="form-control" id="otherCountry">
+            </div>
+
+            <!-- Organisation Name -->
+            <div class="mb-3">
+                <label for="organisation" class="form-label">Organisation Name</label>
+                <select class="form-select" id="organisation" onchange="toggleOtherOrganisation()" required>
+                    <option value="">Select Organisation</option>
+                    <option data-country="Malaysia">Tunku Abdul Rahman University of Management and Technology (Malaysia)</option>
+                    <option data-country="Non-Malaysia">BINUS University (Indonesia)</option>
+                    <option data-country="Non-Malaysia">Mindanao State University (Philippines)</option>
+                    <option data-country="Non-Malaysia">Sri Lanka Technology Campus (Sri Lanka)</option>
+                    <option data-country="Non-Malaysia">Universitas Diponegoro (UNDIP) (Indonesia)</option>
+                    <option data-country="Malaysia">Multimedia University (Malaysia)</option>
+                    <option value="Other" data-country="both">Other</option>
+                </select>
+            </div>
+
+            <!-- Specify Organisation Name if Other is selected -->
+            <div class="mb-3 hidden" id="otherOrgDiv">
+                <label for="otherOrg" class="form-label">Please specify your organisation</label>
+                <input type="text" class="form-control" id="otherOrg">
+            </div>
+
+            <!-- Attendance Mode -->
+            <div class="mb-3">
+                <label for="attendanceMode" class="form-label">Attendance Mode</label>
+                <select class="form-select" id="attendanceMode" required onchange="toggleAttendanceFields()">
+                    <option value="">Select Attendance Mode</option>
+                    <option value="Physical">Physical</option>
+                    <option value="Online">Online</option>
+                </select>
+            </div>
+
+            <!-- Physical Attendance Fields -->
+            <div id="physicalFields" class="hidden">
+                <!-- Presenter Type -->
+                <div class="mb-3">
+                    <label for="presenterType" class="form-label">Presenter Type</label>
+                    <select class="form-select" id="presenterType" onchange="togglePresenterFields()">
+                        <option value="">Select Presenter Type</option>
+                        <option value="Presenter">Presenter</option>
+                        <option value="Non-Presenter">Non-Presenter</option>
+                    </select>
+                </div>
+
+                <!-- Student/Professional Type -->
+                <div class="mb-3 hidden" id="participantTypeDiv">
+                    <label for="participantType" class="form-label">Student / Professional</label>
+                    <select class="form-select" id="participantType" onchange="toggleDietaryFields()">
+                        <option value="">Select Type</option>
+                        <option value="Professional">Professional</option>
+                        <option value="Student">Student</option>
+                    </select>
+                </div>
+
+                <!-- Dietary Preference -->
+                <div class="mb-3" id="dietaryDiv">
+                    <label for="dietaryPreference" class="form-label">Dietary Preference</label>
+                    <select class="form-select" id="dietaryPreference" onchange="toggleOtherDietary()">
+                        <option value="">Select Dietary Preference</option>
+                        <option value="Vegetarian">Vegetarian</option>
+                        <option value="No Restriction">No Restriction</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+
+                <!-- Other Dietary Preference -->
+                <div class="mb-3 hidden" id="otherDietaryDiv">
+                    <label for="otherDietary" class="form-label">Please specify your dietary preference</label>
+                    <input type="text" class="form-control" id="otherDietary">
+                </div>
+
+                <!-- Paper Information (Only for Presenters) -->
+                <div class="mb-3 hidden" id="paperInfoDiv">
+                    <hr class="my-4">
+                    <h4 class="mb-3">Paper Information</h4>
+                    <div class="mb-3">
+                        <label for="paperId" class="form-label">Paper ID</label>
+                        <input type="text" class="form-control" id="paperId" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="paperTitle" class="form-label">Paper Title</label>
+                        <input type="text" class="form-control" id="paperTitle" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="certificateName" class="form-label">Name for Certificate (for Presenter)</label>
+                        <input type="text" class="form-control" id="certificateName" required>
+                    </div>
+                </div>
+
+                <!-- Pricing Information -->
+                <div class="mb-3 hidden" id="pricingDiv">
+                    <hr class="my-4">
+                    <h4 class="mb-3">Registration Fee</h4>
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="text-center">
+                                <h5>Total Amount</h5>
+                                <div id="totalAmount" class="text-primary mb-2"></div>
+                                <div id="usdAmount" class="text-muted small"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Submit Buttons -->
+            <div class="mb-3">
+                <button type="submit" class="btn btn-primary" id="registerBtn" onclick="handleSubmit(event)">Register</button>
+                <button type="submit" class="btn btn-success hidden" id="paymentBtn" onclick="handlePayment(event)">Proceed to Payment</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Success Modal -->
+    <div class="modal fade" id="successModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Registration Successful</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Thank you for registering for 4ᵗʰ International Conference on Digital Transformation and Applications (ICDXA 2025)!</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="scripts/script.js"></script>
+</body>
+
+</html>
