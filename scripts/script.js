@@ -2,29 +2,28 @@
 const PRICING = {
     'Tunku Abdul Rahman University of Management and Technology (Malaysia)': {
         online: {
-            professional: 0,
-            student: 0,
-            presenter: 0
+            nonPresenter: { rm: 0, usd: 0 },
+            presenter: { rm: 300, usd: 70 }
         },
         physical: {
             presenter: { rm: 300, usd: 70 },
-            nonPresenter: 0
+            nonPresenter: { rm: 0, usd: 0 }
         }
     },
     'BINUS University (Indonesia)': {
         online: {
             presenter: { rm: 900, usd: 200 },
-            nonPresenter: 0
+            nonPresenter: { rm: 0, usd: 0 },
         },
         physical: {
             presenter: { rm: 900, usd: 200 },
-            nonPresenter: 0
+            nonPresenter: { rm: 0, usd: 0 }
         }
     },
     'Mindanao State University (Philippines)': {
         online: {
             presenter: { rm: 1200, usd: 260 },
-            nonPresenter: 0
+            nonPresenter: { rm: 0, usd: 0 }
         },
         physical: {
             presenter: { rm: 1200, usd: 260 },
@@ -34,7 +33,7 @@ const PRICING = {
     'Sri Lanka Technology Campus (Sri Lanka)': {
         online: {
             presenter: { rm: 1200, usd: 260 },
-            nonPresenter: 0
+            nonPresenter: { rm: 0, usd: 0 }
         },
         physical: {
             presenter: { rm: 1200, usd: 260 },
@@ -44,7 +43,7 @@ const PRICING = {
     'Universitas Diponegoro (UNDIP) (Indonesia)': {
         online: {
             presenter: { rm: 1200, usd: 260 },
-            nonPresenter: 0
+            nonPresenter: { rm: 0, usd: 0 }
         },
         physical: {
             presenter: { rm: 1200, usd: 260 },
@@ -54,7 +53,7 @@ const PRICING = {
     'Multimedia University (Malaysia)': {
         online: {
             presenter: { rm: 1200, usd: 260 },
-            nonPresenter: 0
+            nonPresenter: { rm: 0, usd: 0 }
         },
         physical: {
             presenter: { rm: 1200, usd: 260 },
@@ -63,8 +62,11 @@ const PRICING = {
     },
     'Other': {
         online: {
-            presenter: 0,
-            nonPresenter: 0
+            presenter: {
+                professional: { rm: 1800, usd: 400 },
+                student: { rm: 1500, usd: 330 }
+            },
+            nonPresenter: { rm: 0, usd: 0 }
         },
         physical: {
             presenter: {
@@ -81,10 +83,10 @@ function toggleOtherCountry() {
     const country = document.getElementById('country').value;
     const otherCountryDiv = document.getElementById('otherCountryDiv');
     const organisationSelect = document.getElementById('organisation');
-    
+
     // Reset organization select
     organisationSelect.value = '';
-    
+
     // Show/hide other country input
     if (country === 'Non-Malaysia') {
         otherCountryDiv.classList.remove('hidden');
@@ -100,7 +102,7 @@ function toggleOtherCountry() {
     for (let i = 0; i < options.length; i++) {
         const option = options[i];
         if (option.value === '') continue; // Skip the "Select Organisation" option
-        
+
         const countryAttr = option.getAttribute('data-country');
         if (countryAttr === 'both' || countryAttr === country) {
             option.style.display = '';
@@ -108,7 +110,7 @@ function toggleOtherCountry() {
             option.style.display = 'none';
         }
     }
-    
+
     // Recalculate price when country changes
     calculatePrice();
 }
@@ -116,7 +118,8 @@ function toggleOtherCountry() {
 function toggleOtherOrganisation() {
     const organisation = document.getElementById('organisation').value;
     const otherOrgDiv = document.getElementById('otherOrgDiv');
-    
+    const attendanceMode = document.getElementById('attendanceMode').value;
+
     if (organisation === 'Other') {
         otherOrgDiv.classList.remove('hidden');
         document.getElementById('otherOrg').required = true;
@@ -125,7 +128,26 @@ function toggleOtherOrganisation() {
         document.getElementById('otherOrg').required = false;
         document.getElementById('otherOrg').value = '';
     }
-    
+
+    // Update presenter type options based on organization and attendance mode
+    if (attendanceMode === 'Physical' && organisation === 'Tunku Abdul Rahman University of Management and Technology (Malaysia)') {
+        const presenterTypeSelect = document.getElementById('presenterType');
+        const nonPresenterOption = presenterTypeSelect.querySelector('option[value="Non-Presenter"]');
+        if (nonPresenterOption) {
+            nonPresenterOption.disabled = true;
+            // If non-presenter was selected, reset to empty
+            if (presenterTypeSelect.value === 'Non-Presenter') {
+                presenterTypeSelect.value = '';
+            }
+        }
+    } else {
+        const presenterTypeSelect = document.getElementById('presenterType');
+        const nonPresenterOption = presenterTypeSelect.querySelector('option[value="Non-Presenter"]');
+        if (nonPresenterOption) {
+            nonPresenterOption.disabled = false;
+        }
+    }
+
     // Calculate price when organization changes
     calculatePrice();
 }
@@ -135,43 +157,73 @@ function toggleAttendanceFields() {
     const physicalFields = document.getElementById('physicalFields');
     const registerBtn = document.getElementById('registerBtn');
     const paymentBtn = document.getElementById('paymentBtn');
-    
+    const organisation = document.getElementById('organisation').value;
+
     if (attendanceMode === 'Physical') {
         physicalFields.classList.remove('hidden');
         // Make physical attendance fields required
         document.getElementById('presenterType').required = true;
         document.getElementById('participantType').required = true;
         document.getElementById('dietaryPreference').required = true;
+
+        // For TAR UMT, disable non-presenter option for physical attendance
+        if (organisation === 'Tunku Abdul Rahman University of Management and Technology (Malaysia)') {
+            const presenterTypeSelect = document.getElementById('presenterType');
+            const nonPresenterOption = presenterTypeSelect.querySelector('option[value="Non-Presenter"]');
+            if (nonPresenterOption) {
+                nonPresenterOption.disabled = true;
+                // If non-presenter was selected, reset to empty
+                if (presenterTypeSelect.value === 'Non-Presenter') {
+                    presenterTypeSelect.value = '';
+                }
+            }
+        } else {
+            // Enable non-presenter option for other institutions
+            const presenterTypeSelect = document.getElementById('presenterType');
+            const nonPresenterOption = presenterTypeSelect.querySelector('option[value="Non-Presenter"]');
+            if (nonPresenterOption) {
+                nonPresenterOption.disabled = false;
+            }
+        }
     } else {
-        physicalFields.classList.add('hidden');
-        // Reset and unrequire physical attendance fields
-        document.getElementById('presenterType').required = false;
-        document.getElementById('participantType').required = false;
-        document.getElementById('dietaryPreference').required = false;
-        document.getElementById('otherDietary').required = false;
-        // Reset values
-        document.getElementById('presenterType').value = '';
-        document.getElementById('participantType').value = '';
-        document.getElementById('dietaryPreference').value = '';
-        document.getElementById('otherDietary').value = '';
-        // Hide dietary fields
-        document.getElementById('dietaryDiv').classList.add('hidden');
-        document.getElementById('otherDietaryDiv').classList.add('hidden');
-        // Hide paper information
-        document.getElementById('paperInfoDiv').classList.add('hidden');
-        document.getElementById('paperId').required = false;
-        document.getElementById('paperTitle').required = false;
-        document.getElementById('certificateName').required = false;
-        document.getElementById('paperId').value = '';
-        document.getElementById('paperTitle').value = '';
-        document.getElementById('certificateName').value = '';
-        // Hide pricing
-        document.getElementById('pricingDiv').classList.add('hidden');
-        // Show register button and hide payment button for online
-        registerBtn.classList.remove('hidden');
-        paymentBtn.classList.add('hidden');
+        // For online attendance
+        if (organisation === 'Tunku Abdul Rahman University of Management and Technology (Malaysia)') {
+            // For TAR UMT, show only presenter type selection for online
+            physicalFields.classList.remove('hidden');
+            document.getElementById('presenterType').required = true;
+            document.getElementById('participantType').required = false;
+            document.getElementById('dietaryPreference').required = false;
+            document.getElementById('otherDietary').required = false;
+
+            // Hide dietary fields
+            document.getElementById('dietaryDiv').classList.add('hidden');
+            document.getElementById('otherDietaryDiv').classList.add('hidden');
+            // Reset dietary values
+            document.getElementById('dietaryPreference').value = '';
+            document.getElementById('otherDietary').value = '';
+
+            // Enable non-presenter option for online
+            const presenterTypeSelect = document.getElementById('presenterType');
+            const nonPresenterOption = presenterTypeSelect.querySelector('option[value="Non-Presenter"]');
+            if (nonPresenterOption) {
+                nonPresenterOption.disabled = false;
+            }
+        } else {
+            // For other institutions, show presenter type selection but hide physical-specific fields
+            physicalFields.classList.remove('hidden');
+            document.getElementById('presenterType').required = true;
+            document.getElementById('participantType').required = false;
+            document.getElementById('dietaryPreference').required = false;
+            document.getElementById('otherDietary').required = false;
+            // Hide dietary fields
+            document.getElementById('dietaryDiv').classList.add('hidden');
+            document.getElementById('otherDietaryDiv').classList.add('hidden');
+            // Reset dietary values
+            document.getElementById('dietaryPreference').value = '';
+            document.getElementById('otherDietary').value = '';
+        }
     }
-    
+
     // Calculate price when attendance mode changes
     calculatePrice();
 }
@@ -180,7 +232,8 @@ function togglePresenterFields() {
     const presenterType = document.getElementById('presenterType').value;
     const paperInfoDiv = document.getElementById('paperInfoDiv');
     const participantTypeDiv = document.getElementById('participantTypeDiv');
-    
+    const participantTypeSelect = document.getElementById('participantType');
+
     // Show/hide paper information based on presenter type
     if (presenterType === 'Presenter') {
         paperInfoDiv.classList.remove('hidden');
@@ -190,6 +243,14 @@ function togglePresenterFields() {
         document.getElementById('paperTitle').required = true;
         document.getElementById('certificateName').required = true;
         document.getElementById('participantType').required = true;
+
+        // Add event listener for participant type change
+        if (participantTypeSelect) {
+            participantTypeSelect.addEventListener('change', function() {
+                console.log('Participant type changed to:', this.value);
+                calculatePrice();
+            });
+        }
     } else {
         paperInfoDiv.classList.add('hidden');
         participantTypeDiv.classList.add('hidden');
@@ -204,7 +265,7 @@ function togglePresenterFields() {
         document.getElementById('certificateName').value = '';
         document.getElementById('participantType').value = '';
     }
-    
+
     toggleDietaryFields();
     // Calculate price when presenter type changes
     calculatePrice();
@@ -214,12 +275,12 @@ function toggleDietaryFields() {
     const presenterType = document.getElementById('presenterType').value;
     const participantType = document.getElementById('participantType').value;
     const dietaryDiv = document.getElementById('dietaryDiv');
-    
+
     // Always show dietary preference for physical attendance
     if (document.getElementById('attendanceMode').value === 'Physical') {
         dietaryDiv.classList.remove('hidden');
         document.getElementById('dietaryPreference').required = true;
-        
+
         // Calculate price when participant type changes
         calculatePrice();
     } else {
@@ -235,7 +296,7 @@ function toggleDietaryFields() {
 function toggleOtherDietary() {
     const dietaryPreference = document.getElementById('dietaryPreference').value;
     const otherDietaryDiv = document.getElementById('otherDietaryDiv');
-    
+
     if (dietaryPreference === 'Other') {
         otherDietaryDiv.classList.remove('hidden');
         document.getElementById('otherDietary').required = true;
@@ -256,40 +317,69 @@ function calculatePrice() {
     const registerBtn = document.getElementById('registerBtn');
     const paymentBtn = document.getElementById('paymentBtn');
     
-    // Hide pricing if no valid selections
-    if (attendanceMode === 'Online' || !organisation || !presenterType || (presenterType === 'Non-Presenter' && organisation === 'BINUS University (Indonesia)' || (presenterType === 'Non-Presenter' && organisation === 'Tunku Abdul Rahman University of Management and Technology (Malaysia)'))) {
-        pricingDiv.classList.add('hidden');
-        registerBtn.classList.remove('hidden');
-        paymentBtn.classList.add('hidden');
-        return;
-    }
-
-    pricingDiv.classList.remove('hidden');
+    console.log('Price calculation inputs:', {
+        attendanceMode,
+        organisation,
+        presenterType,
+        participantType,
+        country
+    });
     
     // Get the pricing for the selected organisation
     const orgPricing = PRICING[organisation];
-    if (!orgPricing) {
+    
+    // Calculate base price
+    let price = { rm: 0, usd: 0 };
+    
+    if (attendanceMode === 'Online') {
+        if (presenterType === 'Presenter') {
+            if (organisation === 'Other') {
+                if (participantType === 'Professional') {
+                    price = orgPricing.online.presenter.professional; // RM1800/USD400
+                    console.log('Setting professional price:', price);
+                } else if (participantType === 'Student') {
+                    price = orgPricing.online.presenter.student; // RM1500/USD330
+                    console.log('Setting student price:', price);
+                }
+            } else if (organisation === 'Tunku Abdul Rahman University of Management and Technology (Malaysia)') {
+                // For TAR UMT online presenter
+                price = orgPricing.online.presenter;
+            } else {
+                // For other institutions' online presenters
+                price = orgPricing.online.presenter;
+            }
+        } else {
+            // For all online non-presenters
+            price = orgPricing.online.nonPresenter;
+        }
+    } else {
+        if (presenterType === 'Presenter') {
+            if (organisation === 'Other') {
+                if (participantType === 'Professional') {
+                    price = orgPricing.physical.presenter.professional;
+                } else if (participantType === 'Student') {
+                    price = orgPricing.physical.presenter.student;
+                }
+            } else {
+                // For all other institutions' physical presenters
+                price = orgPricing.physical.presenter;
+            }
+        } else {
+            // For all physical non-presenters
+            price = orgPricing.physical.nonPresenter;
+        }
+    }
+
+    // Show/hide pricing div based on conditions
+    if (!organisation || !presenterType) {
         pricingDiv.classList.add('hidden');
         registerBtn.classList.remove('hidden');
         paymentBtn.classList.add('hidden');
         return;
     }
 
-    // Calculate base price
-    let price = { rm: 0, usd: 0 };
-    if (attendanceMode === 'Online') {
-        const onlinePrice = orgPricing.online[presenterType === 'Presenter' ? 'presenter' : 'nonPresenter'];
-        price = typeof onlinePrice === 'object' ? onlinePrice : { rm: onlinePrice, usd: 0 };
-    } else {
-        if (organisation === 'Other' && presenterType === 'Presenter') {
-            // For Other institutions, check participant type for presenters
-            const presenterPrice = orgPricing.physical.presenter[participantType.toLowerCase()];
-            price = presenterPrice || { rm: 0, usd: 0 };
-        } else {
-            const physicalPrice = orgPricing.physical[presenterType === 'Presenter' ? 'presenter' : 'nonPresenter'];
-            price = typeof physicalPrice === 'object' ? physicalPrice : { rm: physicalPrice, usd: 0 };
-        }
-    }
+    // Show pricing div for all cases
+    pricingDiv.classList.remove('hidden');
 
     // Update amounts and button visibility
     if (country === 'Malaysia') {
@@ -299,10 +389,8 @@ function calculatePrice() {
         document.getElementById('totalAmount').innerHTML = `<h3>USD ${price.usd}</h3>`;
         document.getElementById('usdAmount').textContent = `RM ${price.rm}`;
     } else {
-        pricingDiv.classList.add('hidden');
-        registerBtn.classList.remove('hidden');
-        paymentBtn.classList.add('hidden');
-        return;
+        document.getElementById('totalAmount').innerHTML = `<h3>RM ${price.rm}</h3>`;
+        document.getElementById('usdAmount').textContent = '';
     }
 
     // Show payment button if there's a fee
@@ -317,10 +405,10 @@ function calculatePrice() {
 
 function handleSubmit(event) {
     event.preventDefault();
-    
+
     // Get the form element
     const form = document.querySelector('form');
-    
+
     // Check if form is valid
     if (!form.checkValidity()) {
         // If form is invalid, show browser's default validation messages
@@ -332,11 +420,11 @@ function handleSubmit(event) {
     const attendanceMode = document.getElementById('attendanceMode').value;
     const organisation = document.getElementById('organisation').value;
     const presenterType = document.getElementById('presenterType').value;
-    
+
     if (attendanceMode === 'Physical') {
         // Check dietary preference for all physical attendance
         const dietaryPreference = document.getElementById('dietaryPreference').value;
-        
+
         if (!dietaryPreference) {
             alert('Please select your dietary preference.');
             return;
@@ -378,7 +466,7 @@ function handleSubmit(event) {
     // Show success modal
     const successModal = new bootstrap.Modal(document.getElementById('successModal'));
     successModal.show();
-    
+
     // Reset form after modal is closed
     document.getElementById('successModal').addEventListener('hidden.bs.modal', function () {
         form.reset();
@@ -399,10 +487,10 @@ function handleSubmit(event) {
 
 function handlePayment(event) {
     event.preventDefault();
-    
+
     // Get the form element
     const form = document.querySelector('form');
-    
+
     // Check if form is valid
     if (!form.checkValidity()) {
         // If form is invalid, show browser's default validation messages
@@ -412,13 +500,13 @@ function handlePayment(event) {
 
     // Additional validation for conditional fields
     const attendanceMode = document.getElementById('attendanceMode').value;
-    
+
     if (attendanceMode === 'Physical') {
         // Check physical attendance required fields
         const presenterType = document.getElementById('presenterType').value;
         const participantType = document.getElementById('participantType').value;
         const dietaryPreference = document.getElementById('dietaryPreference').value;
-        
+
         if (!presenterType || !dietaryPreference) {
             alert('Please fill in all required fields for physical attendance.');
             return;
@@ -436,7 +524,7 @@ function handlePayment(event) {
             const paperTitle = document.getElementById('paperTitle').value;
             const certificateName = document.getElementById('certificateName').value;
 
-            if(!participantType){
+            if (!participantType) {
                 alert('Please fill in all required fields for physical attendance.');
                 return;
             }
@@ -487,7 +575,7 @@ function displayFileInfo(file) {
 
     if (file.type.startsWith('image/')) {
         const reader = new FileReader();
-        reader.onload = function(e) {
+        reader.onload = function (e) {
             previewImage.src = e.target.result;
             previewImage.style.display = 'block';
         }
@@ -517,23 +605,32 @@ function submitEvidence() {
     }
 
     // TODO: Implement file upload logic here
-    
+
     // Show success modal
     const successModal = new bootstrap.Modal(document.getElementById('paymentEvidenceSuccessModal'));
     successModal.show();
 }
 
 // Initialize drag and drop functionality when the page loads
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Initialize organization list based on selected country
     toggleOtherCountry();
+
+    // Add event listener for participant type change
+    const participantTypeSelect = document.getElementById('participantType');
+    if (participantTypeSelect) {
+        participantTypeSelect.addEventListener('change', function() {
+            console.log('Participant type changed to:', this.value);
+            calculatePrice();
+        });
+    }
 
     // Clear form on page load and navigation
     function clearForm() {
         const form = document.querySelector('form');
         if (form) {
             form.reset();
-            
+
             // Reset all hidden fields
             document.getElementById('otherCountryDiv').classList.add('hidden');
             document.getElementById('otherOrgDiv').classList.add('hidden');
@@ -543,11 +640,11 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('paperInfoDiv').classList.add('hidden');
             document.getElementById('participantTypeDiv').classList.add('hidden');
             document.getElementById('pricingDiv').classList.add('hidden');
-            
+
             // Reset buttons
             document.getElementById('registerBtn').classList.remove('hidden');
             document.getElementById('paymentBtn').classList.add('hidden');
-            
+
             // Clear sessionStorage
             sessionStorage.clear();
         }
@@ -557,12 +654,12 @@ document.addEventListener('DOMContentLoaded', function() {
     clearForm();
 
     // Clear form on navigation
-    window.addEventListener('pageshow', function(event) {
+    window.addEventListener('pageshow', function (event) {
         clearForm();
     });
 
     // Clear form when returning to the page
-    window.addEventListener('popstate', function(event) {
+    window.addEventListener('popstate', function (event) {
         clearForm();
     });
 
